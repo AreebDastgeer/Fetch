@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react"
 import Image from 'next/image'
 const Abc = () => {
 	const [dataStore, setDataStore] = useState(null)
-
+	const [searchQuery, setSearchQuery] = useState("");
 	const getData = () => {
 		return fetch("https://random-data-api.com/api/users/random_user?size=9").then((completeResponse) =>
 			completeResponse.json()
@@ -18,14 +18,30 @@ const Abc = () => {
 	useEffect(() => {
 		setData()
 	}, [])
+	const handleSearch = () => {
+		const filteredData = dataStore.filter(({ first_name, last_name }) => {
+			const fullName = `${first_name} ${last_name}`.toLowerCase();
+			return fullName.includes(searchQuery.toLowerCase());
+		});
+		setDataStore(filteredData);
+	}
+	const handleKeyPress = (event) => {
+		if (event.key === "Enter") {
+			handleSearch();
+		}
+	}
 
 	return <div >
 		<div className="flex justify-end items-center m-3 p-2">
 			<input
 				type="text"
 				placeholder="Search Users"
+				value={searchQuery}
+				onChange={(e) => setSearchQuery(e.target.value)}
+				onKeyDown={handleKeyPress}
 				className="border border-gray-300 px-4 py-2 rounded-full focus:outline-none focus:ring-1 focus:ring-gray-500 focus:border-gray-500"
 			/>
+
 		</div>
 		<h1 className="text-5xl font-serif tracking-wide  p-3 mx-12">Users</h1>
 		<div className="flex justify-around">
@@ -36,7 +52,7 @@ const Abc = () => {
 						<div className="  ">
 							<div className="flex bg-slate-50 m-3 h-60 rounded-2xl space-x-2 py-5 px-5 hover:bg-white hover:scale-110 hover:border-2 hover:cursor-pointer hover:shadow-lg border-slate-400">
 								<div className=" relative h-32 w-32">
-									<Image alt="No Img..." src={avatar}  width={100} height={100} quality={90}  />
+									<Image alt="No Img..." src={avatar} width={100} height={100} quality={90} />
 								</div>
 								<div className="my-auto">
 									<h1 className="font-bold"> {first_name + " " + last_name}</h1>
